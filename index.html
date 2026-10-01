@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compliance Platform Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@500..800&family=Nunito+Sans:opsz,wght@6..12,400..700&display=swap">
+<style>
+
+/* Layout: header, three phase tabs over a to-scale month bar, then five numbered sections for the chosen phase and a closing gate */
+/* Palette: Midnight #013D5A, Lionsmane #FCF3E3, Celeste #BDD3CE, Herb #708C69, Marigold #F4A258 */
+:root {
+  --midnight: #013D5A;
+  --lionsmane: #FCF3E3;
+  --celeste: #BDD3CE;
+  --herb: #708C69;
+  --marigold: #F4A258;
+  --bg: var(--lionsmane);
+  --surface: #FFFAF1;
+  --ink: var(--midnight);
+  --muted: #3F5B69;
+  --line: #E6DAC4;
+  --accent: var(--midnight);
+  --accent-soft: var(--celeste);
+  --label: #4A6644;
+  --chip: #DCE8E4;
+  --tab-on-bg: var(--midnight);
+  --tab-on-fg: var(--lionsmane);
+  --bar-on: var(--marigold);
+  --gate-bg: var(--marigold);
+  --gate-ink: var(--midnight);
+  --font-body: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-display: 'Raleway', 'Trebuchet MS', Arial, sans-serif;
+  --font-mono: 'Raleway', 'Trebuchet MS', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #01283B; --surface: #013D5A; --ink: #FCF3E3; --muted: #BDD3CE; --line: #1D5875;
+    --accent: #BDD3CE; --accent-soft: #0E4F6E; --label: #A9C3A2; --chip: #0E4F6E;
+    --tab-on-bg: #BDD3CE; --tab-on-fg: #013D5A; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #01283B; --surface: #013D5A; --ink: #FCF3E3; --muted: #BDD3CE; --line: #1D5875;
+  --accent: #BDD3CE; --accent-soft: #0E4F6E; --label: #A9C3A2; --chip: #0E4F6E;
+  --tab-on-bg: #BDD3CE; --tab-on-fg: #013D5A; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; padding-inline: 20px; padding-block: 40px 56px; }
+.wrap { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.byline { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; padding-bottom: 14px; border-bottom: 2px solid var(--herb); }
+.byline-title { font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+.byline-sep { color: var(--muted); }
+.byline-by { font-family: var(--font-body); font-size: 15px; color: var(--muted); }
+header { display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { font-family: var(--font-mono); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 5vw, 42px); line-height: 1.1; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+.phases { display: flex; flex-direction: column; gap: 10px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); padding-block: 10px; }
+.tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.tab { appearance: none; text-align: left; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; transition: border-color .15s, background .15s; }
+.tab:hover { border-color: var(--accent); }
+.tab:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.tab[aria-selected="true"] { background: var(--tab-on-bg); border-color: var(--tab-on-bg); color: var(--tab-on-fg); }
+.tab[aria-selected="true"] .num, .tab[aria-selected="true"] .when { color: var(--tab-on-fg); opacity: .85; }
+.tab .num { font-family: var(--font-mono); font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--label); }
+.tab .name { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: .02em; }
+.tab .when { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.scale { display: grid; grid-template-columns: 3fr 6fr 9fr; gap: 4px; }
+.seg { height: 6px; border-radius: 3px; background: var(--line); transition: background .15s; }
+.seg.on { background: var(--bar-on); }
+
+.panel { display: flex; flex-direction: column; gap: 16px; }
+.goal { background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--herb); border-radius: 16px; padding: 20px 24px; display: flex; flex-direction: column; gap: 4px; }
+.label { font-family: var(--font-mono); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); }
+.goal p { margin: 0; font-family: var(--font-display); font-size: clamp(20px, 3vw, 24px); font-weight: 700; line-height: 1.25; text-wrap: balance; }
+
+.sec { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: clamp(18px, 3.5vw, 26px); display: flex; flex-direction: column; gap: 16px; }
+.sec > h2 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 18px; text-transform: uppercase; letter-spacing: .08em; display: flex; gap: 12px; align-items: baseline; }
+.sec > h2 .n { font-family: var(--font-mono); font-size: 14px; color: var(--label); font-weight: 800; }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; }
+.block { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.block.full { grid-column: 1 / -1; }
+.block h3 { margin: 0; font-size: 12px; font-family: var(--font-mono); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.block p { margin: 0; }
+ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--chip); border-radius: 999px; padding: 3px 12px; font-size: 14px; }
+.users { display: flex; flex-direction: column; gap: 8px; }
+.user { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: baseline; }
+.tag { font-family: var(--font-mono); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.tag.primary { color: var(--accent); }
+.user b { display: block; }
+.user span.need { color: var(--muted); font-size: 15px; }
+ol.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+ol.list li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; }
+.idx { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--ink); font-family: var(--font-mono); font-size: 12px; display: grid; place-items: center; }
+ol.list .d { color: var(--muted); }
+.plan { display: flex; flex-direction: column; }
+.plan .row { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 14px; padding-block: 8px; border-top: 1px solid var(--line); }
+.plan .row:first-child { border-top: none; padding-top: 0; }
+.when-lbl { font-family: var(--font-mono); font-size: 13px; color: var(--label); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); border-top: none; }
+td:first-child { color: var(--muted); white-space: nowrap; }
+.star { background: var(--accent-soft); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.star b { font-family: var(--font-display); font-size: 18px; }
+.callout { background: var(--accent-soft); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.risk { display: grid; grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr); gap: 8px; padding-block: 8px; border-top: 1px solid var(--line); }
+.risk:first-child { border-top: none; padding-top: 0; }
+.risk .arr { color: var(--muted); text-align: center; }
+.risk .fix { color: var(--muted); }
+.trade { display: flex; flex-direction: column; gap: 6px; }
+.trade div b { font-weight: 700; }
+.trade div span { color: var(--muted); }
+.gate { background: var(--gate-bg); color: var(--gate-ink); border-radius: 16px; padding: 18px 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 28px; }
+.gate .label { color: var(--gate-ink); font-weight: 700; }
+.gate p { margin: 4px 0 0; }
+footer { color: var(--muted); font-size: 14px; }
+
+@media (max-width: 680px) {
+  .cols, .gate { grid-template-columns: minmax(0, 1fr); }
+  .tabs { gap: 6px; }
+  .tab { padding: 10px; }
+  .tab .name { font-size: 15px; }
+  .tab .when { font-size: 12px; }
+  .risk { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .risk .arr { display: none; }
+  .plan .row { grid-template-columns: 84px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="byline"><span class="byline-title">Silvermine PM Assignment</span><span class="byline-sep" aria-hidden="true">·</span><span class="byline-by">By Abhinav Chaudhary</span></div>
+  <header>
+    <p class="eyebrow">University Operations &amp; Compliance Platform</p>
+    <h1>Three phases to the complete platform</h1>
+    <p class="lede">About 18 months in total. Each phase follows the same five questions, and has to prove its goal before the next one starts.</p>
+  </header>
+
+  <section class="phases" aria-label="Phases">
+    <div class="tabs" role="tablist" aria-label="Choose a phase">
+      <button class="tab" role="tab" id="tab-1" aria-controls="panel" aria-selected="true" data-phase="0"><span class="num">Phase 1</span><span class="name">Prove it</span><span class="when">Months 0–3</span></button>
+      <button class="tab" role="tab" id="tab-2" aria-controls="panel" aria-selected="false" tabindex="-1" data-phase="1"><span class="num">Phase 2</span><span class="name">Scale it</span><span class="when">Months 3–9</span></button>
+      <button class="tab" role="tab" id="tab-3" aria-controls="panel" aria-selected="false" tabindex="-1" data-phase="2"><span class="num">Phase 3</span><span class="name">Expand it</span><span class="when">Months 9–18</span></button>
+    </div>
+    <div class="scale" aria-hidden="true" title="Phase lengths to scale"><div class="seg on"></div><div class="seg"></div><div class="seg"></div></div>
+  </section>
+
+  <article class="panel" id="panel" role="tabpanel" aria-labelledby="tab-1"></article>
+
+  <footer>The bar under the tabs shows each phase's length to scale. Targets for Phases 2 and 3 are set from Phase 1 results.</footer>
+</div>
+
+<script>
+const PHASES = [
+  {
+    goal: "One university team trusts us with a real compliance deadline.",
+    problem: "Compliance work sits in spreadsheets, email and shared drives. Nobody sees what's due, who owns it or whether the proof exists, so deadlines slip and audits become a scramble.",
+    focus: "Accreditation and regulatory reporting. It has hard deadlines, lots of documents from many departments, and pain that is felt every cycle.",
+    users: [
+      ["Primary", "Compliance coordinator", "One list of what's due, less chasing people"],
+      ["Secondary", "Department admin", "Know what to submit and by when"],
+      ["Secondary", "Leadership", "A quick view of what's on track"]
+    ],
+    inScope: [
+      ["Compliance register", "Requirements with owners and due dates"],
+      ["Reminders", "Automatic emails, escalation when overdue"],
+      ["Evidence upload", "Proof stored against each requirement"],
+      ["Simple approval", "Approve, or send back with a note"],
+      ["Status dashboard", "Done, due soon, overdue by department"]
+    ],
+    outScope: ["SIS / ERP integrations", "Student portal", "AI features", "Workflow builder", "Multiple frameworks", "Mobile app"],
+    assumptions: ["Manual entry or Excel import is acceptable at first", "One champion per pilot university", "Email reminders are enough to change behaviour", "One template fits most universities with small edits"],
+    plan: [
+      ["Week 1", "Discovery: 8–10 interviews, map today's workflow"],
+      ["Week 2", "Define scope, write the PRD, test a clickable prototype"],
+      ["Weeks 3–5", "Build register, reminders and evidence upload"],
+      ["Week 6", "Build approvals and the dashboard"],
+      ["Week 7", "Onboard pilot universities with their real requirements"],
+      ["Week 8", "Collect feedback, fix, recommend Phase 2"],
+      ["Months 2–3", "Pilots run one full compliance cycle"]
+    ],
+    ritual: "Weekly 45-minute product call with PM, design, engineering lead, QA and customer success. Agenda: progress and metrics, customer feedback, blockers, decisions needed, next week's commitments. The PM sends written notes the same day.",
+    northStar: ["% of compliance deadlines met on time", "90%+ in pilots"],
+    metrics: [
+      ["Adoption", "Weekly active admins", "70% of invited users"],
+      ["Adoption", "Requirements tracked", "50+ per pilot"],
+      ["Efficiency", "Time to prepare for an audit", "30% less"],
+      ["Quality", "Overdue items and escalations", "Falling week on week"]
+    ],
+    feedback: ["Pilot check-in every two weeks", "In-app feedback button", "Triage weekly: tag, prioritise, tell users what changed"],
+    risks: [
+      ["Rules vary between universities", "Editable template, pilots of different types"],
+      ["Admins slow to adopt", "One-click upload, a leadership sponsor per pilot"],
+      ["Privacy of student records", "Access control, encryption, audit log"],
+      ["Small team", "Strict out-of-scope list"]
+    ],
+    validate: ["Is the pain frequent and costly enough that coordinators will switch?", "8–10 interviews and a prototype test before writing code. It is the cheapest way to avoid building the wrong thing."],
+    tradeoffs: [
+      ["Manual entry", "integrations", "ship in weeks, learn sooner"],
+      ["One area, done deeply", "many, done lightly", "depth builds trust"],
+      ["Coordinator first", "every user equally", "one champion brings the rest"]
+    ],
+    gate: "2–3 pilots live, 90%+ of deadlines met on time, and at least one pilot ready to pay.",
+    cut: "Dashboard export, then escalation rules. Register, reminders and upload always stay."
+  },
+  {
+    goal: "The whole university runs its compliance work here.",
+    problem: "Phase 1 works for one team and one area. Other departments still use spreadsheets, and typing every requirement by hand doesn't scale to 10+ universities.",
+    focus: "Breadth inside the university: more compliance areas, and less manual work through integrations.",
+    users: [
+      ["Primary", "Coordinators across all areas", "One system for every compliance area"],
+      ["Secondary", "Every department admin", "The same simple upload flow"],
+      ["New", "University IT team", "Safe, simple integrations and single sign-on"]
+    ],
+    inScope: [
+      ["More compliance areas", "Exams, admissions, fees, hostel"],
+      ["Richer workflows", "Multi-step approvals, full roles and permissions"],
+      ["Wider reminders", "WhatsApp and SMS, plus a template library"],
+      ["Integrations", "SIS, ERP and single sign-on, most-requested first"],
+      ["Audit packs", "All evidence for an inspection in one export"]
+    ],
+    outScope: ["Student portal", "AI features", "Workflow builder", "Mobile app"],
+    assumptions: ["Phase 1 champions help roll out to other departments", "Universities will share access to their SIS and ERP", "A standard setup works for most new customers"],
+    plan: [
+      ["Months 3–4", "Add the next two areas, roles and multi-step approvals"],
+      ["Months 4–6", "First one or two integrations and single sign-on"],
+      ["Months 6–7", "WhatsApp and SMS reminders, templates, audit packs"],
+      ["Months 7–9", "Onboard 10+ universities with a repeatable setup"]
+    ],
+    ritual: null,
+    northStar: ["% of compliance deadlines met on time", "Held at Phase 1 level while scaling"],
+    metrics: [
+      ["Adoption", "Active departments per university", "Rising each month"],
+      ["Growth", "Paying universities", "10+"],
+      ["Efficiency", "Requirements created without manual entry", "Majority"],
+      ["Quality", "Time to onboard a new university", "Falling"]
+    ],
+    feedback: ["Monthly customer council of pilot champions", "Usage data per department", "Support tickets triaged weekly"],
+    risks: [
+      ["Integrations are slow and differ by university", "Build only the top one or two; keep Excel import as a fallback"],
+      ["Too many areas at once", "Add an area only when several customers ask for it"],
+      ["Onboarding is too manual", "Templates and a setup checklist"]
+    ],
+    validate: ["Which integration removes the most manual work?", "Measure where data entry time goes before building any connector."],
+    tradeoffs: [
+      ["Adoption first", "integrations first", "only connect systems once people rely on the tool"],
+      ["Standard templates", "custom setups", "faster onboarding, less support"],
+      ["More areas for staff", "new users like students", "win the core users fully first"]
+    ],
+    gate: "10+ paying universities, most departments active, and little manual data entry left.",
+    cut: "Extra messaging channels, then the fourth compliance area."
+  },
+  {
+    goal: "Cover the full student lifecycle and flag problems before they happen.",
+    problem: "Compliance is now tracked, but lifecycle processes such as admissions, scholarships and graduation still run on paper and email, and risks are spotted late.",
+    focus: "New users (students) and new value (prediction), built on the clean data from Phases 1 and 2.",
+    users: [
+      ["Primary", "Admin and ops teams", "One place for lifecycle processes"],
+      ["New", "Students", "Submit documents and track requests"],
+      ["Secondary", "Leadership", "Early warning on risks"]
+    ],
+    inScope: [
+      ["Student portal", "Submit documents, track request status"],
+      ["Lifecycle workflows", "Ready-made flows from admission to graduation"],
+      ["Workflow builder", "Universities design their own processes"],
+      ["AI assist", "Read documents, draft reports, flag at-risk deadlines"],
+      ["Mobile app", "Tasks, approvals and uploads on the phone"]
+    ],
+    outScope: ["Replacing the SIS or ERP", "Fee collection and payments"],
+    assumptions: ["Clean data from earlier phases makes AI useful", "Universities will let students use the platform", "Customers want to configure their own workflows"],
+    plan: [
+      ["Months 9–11", "Student portal and the first lifecycle flow (admission documents)"],
+      ["Months 11–13", "Workflow builder"],
+      ["Months 13–16", "AI assist: document reading, report drafts, risk alerts"],
+      ["Months 16–18", "Mobile app and support for more regulators"]
+    ],
+    ritual: null,
+    northStar: ["% of compliance deadlines met on time", "Plus: % of risks flagged before the deadline"],
+    metrics: [
+      ["Adoption", "Students active on the portal", "Rising each term"],
+      ["Adoption", "Workflows built by customers", "Rising"],
+      ["Efficiency", "Hours saved per report with AI drafts", "Rising"],
+      ["Business", "Renewals and expansion", "Strong"]
+    ],
+    feedback: ["Beta group for each new feature", "Usability tests with students", "Rating on every AI draft"],
+    risks: [
+      ["Student data privacy", "Consent, role-based access, data kept in region"],
+      ["AI mistakes in compliance work", "A person approves every AI output"],
+      ["Product becomes too complex", "Templates stay the default; the builder is for power users"]
+    ],
+    validate: ["Will students use a portal their university runs?", "Pilot it with one university's admission documents first."],
+    tradeoffs: [
+      ["Human review", "full automation", "compliance errors are costly"],
+      ["Connect to the SIS", "replace it", "no fight with existing vendors"],
+      ["Configurable", "custom-built per client", "one product that scales"]
+    ],
+    gate: "The platform is each university's system of record, with strong renewals and expansion.",
+    cut: "Mobile app (the web app works on phones), then extra regulators."
+  }
+];
+
+const tabs = [...document.querySelectorAll('.tab')];
+const segs = [...document.querySelectorAll('.seg')];
+const panel = document.getElementById('panel');
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const li = arr => arr.map(x => '<li>' + esc(x) + '</li>').join('');
+
+function render(p) {
+  const users = p.users.map(u =>
+    '<div class="user"><span class="tag' + (u[0] === 'Primary' ? ' primary' : '') + '">' + esc(u[0]) + '</span><div><b>' + esc(u[1]) + '</b><span class="need">' + esc(u[2]) + '</span></div></div>').join('');
+  const scope = p.inScope.map((s, i) =>
+    '<li><span class="idx">' + (i + 1) + '</span><div><b>' + esc(s[0]) + '</b> <span class="d">· ' + esc(s[1]) + '</span></div></li>').join('');
+  const out = p.outScope.map(s => '<span class="chip">' + esc(s) + '</span>').join('');
+  const plan = p.plan.map(r => '<div class="row"><span class="when-lbl">' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span></div>').join('');
+  const metrics = p.metrics.map(m => '<tr><td>' + esc(m[0]) + '</td><td>' + esc(m[1]) + '</td><td>' + esc(m[2]) + '</td></tr>').join('');
+  const risks = p.risks.map(r => '<div class="risk"><span>' + esc(r[0]) + '</span><span class="arr" aria-hidden="true">→</span><span class="fix">' + esc(r[1]) + '</span></div>').join('');
+  const trade = p.tradeoffs.map(t => '<div><b>' + esc(t[0]) + '</b> over ' + esc(t[1]) + ' <span>· ' + esc(t[2]) + '</span></div>').join('');
+
+  return '' +
+  '<div class="goal"><span class="label">Goal</span><p>' + esc(p.goal) + '</p></div>' +
+
+  '<section class="sec"><h2><span class="n">01</span>Problem framing</h2><div class="cols">' +
+    '<div class="block"><h3>Problem</h3><p>' + esc(p.problem) + '</p></div>' +
+    '<div class="block"><h3>Users</h3><div class="users">' + users + '</div></div>' +
+    '<div class="block full"><h3>Focus</h3><p>' + esc(p.focus) + '</p></div>' +
+  '</div></section>' +
+
+  '<section class="sec"><h2><span class="n">02</span>Scope</h2><div class="cols">' +
+    '<div class="block full"><h3>What we build</h3><ol class="list">' + scope + '</ol></div>' +
+    '<div class="block"><h3>Not in this phase</h3><div class="chips">' + out + '</div></div>' +
+    '<div class="block"><h3>Assumptions</h3><ul class="plain">' + li(p.assumptions) + '</ul></div>' +
+  '</div></section>' +
+
+  '<section class="sec"><h2><span class="n">03</span>Execution plan</h2>' +
+    '<div class="plan">' + plan + '</div>' +
+    (p.ritual ? '<div class="callout"><span class="label">Weekly product call</span><p>' + esc(p.ritual) + '</p></div>' : '') +
+  '</section>' +
+
+  '<section class="sec"><h2><span class="n">04</span>Metrics &amp; feedback</h2>' +
+    '<div class="star"><span class="label">North Star</span><b>' + esc(p.northStar[0]) + '</b><span>' + esc(p.northStar[1]) + '</span></div>' +
+    '<div class="cols">' +
+      '<div class="block"><h3>Supporting metrics</h3><div class="table-wrap"><table><thead><tr><th>Type</th><th>Metric</th><th>Target</th></tr></thead><tbody>' + metrics + '</tbody></table></div></div>' +
+      '<div class="block"><h3>Feedback loop</h3><ul class="plain">' + li(p.feedback) + '</ul></div>' +
+    '</div>' +
+  '</section>' +
+
+  '<section class="sec"><h2><span class="n">05</span>Risks &amp; tradeoffs</h2><div class="cols">' +
+    '<div class="block"><h3>Top risks → how we reduce them</h3><div>' + risks + '</div></div>' +
+    '<div class="block"><h3>Validate first</h3><div class="callout"><b>' + esc(p.validate[0]) + '</b><span>' + esc(p.validate[1]) + '</span></div></div>' +
+    '<div class="block full"><h3>Tradeoffs we choose</h3><div class="trade">' + trade + '</div></div>' +
+  '</div></section>' +
+
+  '<div class="gate">' +
+    '<div><span class="label">Done when</span><p>' + esc(p.gate) + '</p></div>' +
+    '<div><span class="label">If squeezed, cut first</span><p>' + esc(p.cut) + '</p></div>' +
+  '</div>';
+}
+
+function show(i, focus) {
+  tabs.forEach((t, k) => { const on = k === i; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; });
+  segs.forEach((s, k) => s.classList.toggle('on', k === i));
+  panel.setAttribute('aria-labelledby', tabs[i].id);
+  panel.innerHTML = render(PHASES[i]);
+  if (focus) tabs[i].focus();
+  try { history.replaceState(null, '', '#phase-' + (i + 1)); } catch (e) {}
+}
+
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => {
+    show(i);
+    const top = panel.getBoundingClientRect().top;
+    if (top < 0) window.scrollTo({ top: window.scrollY + top - 140, behavior: 'smooth' });
+  });
+  t.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') show((i + 1) % 3, true);
+    if (e.key === 'ArrowLeft') show((i + 2) % 3, true);
+  });
+});
+
+const m = /^#phase-([1-3])$/.exec(location.hash);
+show(m ? Number(m[1]) - 1 : 0);
+</script>
+</body>
+</html>
